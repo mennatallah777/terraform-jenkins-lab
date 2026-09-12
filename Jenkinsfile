@@ -42,9 +42,21 @@ pipeline {
         }
         success {
             echo "✅ Build succeeded for ${params.ENVIRONMENT}!"
+            mail to: 'your-email@example.com',
+                 subject: "✅ Build Succeeded - ${params.ENVIRONMENT}",
+                 body: "Pipeline for ${params.ENVIRONMENT} completed successfully. Build #${env.BUILD_NUMBER}"
         }
         failure {
             echo "❌ Build failed for ${params.ENVIRONMENT}."
+            mail to: 'your-email@example.com',
+                 subject: "❌ Build Failed - ${params.ENVIRONMENT}",
+                 body: "Pipeline for ${params.ENVIRONMENT} failed. Build #${env.BUILD_NUMBER}"
+        }
+        aborted {
+            echo "⚠️ Build aborted for ${params.ENVIRONMENT}."
+            mail to: 'your-email@example.com',
+                 subject: "⚠️ Build Aborted - ${params.ENVIRONMENT}",
+                 body: "Pipeline for ${params.ENVIRONMENT} was manually aborted by a user. Build #${env.BUILD_NUMBER}"
         }
     }
 }
