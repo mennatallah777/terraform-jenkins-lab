@@ -10,51 +10,41 @@ pipeline {
     }
 
     stages {
-        stage('Terraform Init') {
+        stage('Hello World') {
             steps {
-                sh 'terraform init'
+                sh '''
+                echo 'Hello World'
+                '''
             }
         }
-
-        stage('Select Workspace') {
+        stage('run another hello') {
             steps {
                 sh """
-                    terraform workspace select ${params.ENVIRONMENT} || terraform workspace new ${params.ENVIRONMENT}
+                echo 'Deploying to environment: ${params.ENVIRONMENT}'
                 """
             }
         }
-
-        stage('Terraform Plan') {
-            steps {
-                sh "terraform plan -var-file=${params.ENVIRONMENT}.tfvars -out=tfplan"
-            }
-        }
-
         stage('Approval') {
             steps {
-                input message: "Apply this plan to ${params.ENVIRONMENT}?", ok: 'Approve'
+                input message: "Proceed with ${params.ENVIRONMENT}?", ok: 'Approve'
             }
         }
-
-        stage('Terraform Apply') {
+        stage('Final Step') {
             steps {
-                sh 'terraform apply -auto-approve tfplan'
+                echo "Running final step for ${params.ENVIRONMENT}"
             }
         }
     }
 
     post {
+        always {
+            echo 'Pipeline finished running.'
+        }
         success {
-            echo "✅ Deployment to ${params.ENVIRONMENT} succeeded!"
-            mail to: 'your-email@example.com',
-                 subject: "✅ Terraform Apply Succeeded - ${params.ENVIRONMENT}",
-                 body: "The pipeline for ${params.ENVIRONMENT} completed successfully. Build #${env.BUILD_NUMBER}"
+            echo "✅ Build succeeded for ${params.ENVIRONMENT}!"
         }
         failure {
-            echo "❌ Deployment to ${params.ENVIRONMENT} failed."
-            mail to: 'your-email@example.com',
-                 subject: "❌ Terraform Apply Failed - ${params.ENVIRONMENT}",
-                 body: "The pipeline for ${params.ENVIRONMENT} failed. Check Jenkins logs. Build #${env.BUILD_NUMBER}"
+            echo "❌ Build failed for ${params.ENVIRONMENT}."
         }
     }
 }
