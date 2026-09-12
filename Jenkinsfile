@@ -48,7 +48,7 @@ pipeline {
         }
         failure {
             echo "❌ Build failed for ${params.ENVIRONMENT}."
-            mail to: 'your-email@example.com',
+            mail to: 'mennayasser777@gmail.com',
                  subject: "❌ Build Failed - ${params.ENVIRONMENT}",
                  body: "Pipeline for ${params.ENVIRONMENT} failed. Build #${env.BUILD_NUMBER}"
         }
